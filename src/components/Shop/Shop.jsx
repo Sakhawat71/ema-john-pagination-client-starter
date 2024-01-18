@@ -14,7 +14,7 @@ const Shop = () => {
     const [currentPage, setCurrentPage] = useState(0)
     const totalPages = Math.ceil(count / itemParPage);
     const pages = [...Array(totalPages).keys()]
-    // console.log(pages)
+
 
     useEffect(() => {
 
