@@ -4,23 +4,24 @@ import Cart from '../Cart/Cart';
 import Product from '../Product/Product';
 import './Shop.css';
 import { Link, useLoaderData } from 'react-router-dom';
+import axios from 'axios';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]);
     const { count } = useLoaderData();
     const [itemParPage, setItemParPage] = useState(12);
-    const [currentPage ,setCurrentPage] = useState(0)
+    const [currentPage, setCurrentPage] = useState(0)
     const totalPages = Math.ceil(count / itemParPage);
     const pages = [...Array(totalPages).keys()]
     // console.log(pages)
 
     useEffect(() => {
 
-        fetch('http://localhost:5000/products')
-            .then(res => res.json())
-            .then(data => setProducts(data))
-    }, []);
+        axios.get(`http://localhost:5000/products?page=${currentPage}&size=${itemParPage}`)
+            .then(res => setProducts(res.data))
+
+    }, [currentPage, itemParPage]);
 
     useEffect(() => {
         const storedCart = getShoppingCart();
@@ -68,18 +69,18 @@ const Shop = () => {
         deleteShoppingCart();
     }
 
-    const handelItemsParPage = e =>{
+    const handelItemsParPage = e => {
         // console.log(typeof parseInt(e.target.value))
         setItemParPage(parseInt(e.target.value))
         setCurrentPage(0)
     }
-    const handelPrevPage = () =>{
-        if(currentPage > 0){
+    const handelPrevPage = () => {
+        if (currentPage > 0) {
             setCurrentPage(currentPage - 1)
         }
     }
     const handelNextPage = () => {
-        if(currentPage < pages.length - 1){
+        if (currentPage < pages.length - 1) {
             setCurrentPage(currentPage + 1)
         }
     }
@@ -106,18 +107,18 @@ const Shop = () => {
                 </Cart>
             </div>
             <div className='text-center items-center space-x-2 mb-20'>
-                <p>Current page: {currentPage+1}</p>
+                <p>Current page: {currentPage + 1}</p>
 
                 <button onClick={handelPrevPage} className='join-item btn'>« Prev</button>
                 {
                     pages.map(page => <button
-                        onClick={()=> setCurrentPage(page)}
-                        className={(currentPage === page ? 'bg-[#FF9900] join-item btn ' : 'join-item btn ' ) }
+                        onClick={() => setCurrentPage(page)}
+                        className={(currentPage === page ? 'bg-[#FF9900] join-item btn ' : 'join-item btn ')}
                         key={page}
                     >{page + 1}</button>)
                 }
                 <button onClick={handelNextPage} className='join-item btn'>Next »</button>
-                
+
                 <select
                     value={itemParPage}
                     name=""
