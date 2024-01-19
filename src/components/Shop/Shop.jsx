@@ -8,40 +8,27 @@ import axios from 'axios';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
-    const [cart, setCart] = useState([]);
-    const { count } = useLoaderData();
+    const cartData = useLoaderData();
+    const [cart, setCart] = useState(cartData);
+    const [count ,setCount] = useState(0)
     const [itemParPage, setItemParPage] = useState(12);
     const [currentPage, setCurrentPage] = useState(0)
     const totalPages = Math.ceil(count / itemParPage);
     const pages = [...Array(totalPages).keys()]
+    
 
-
+    // products load by page
     useEffect(() => {
-
         axios.get(`http://localhost:5000/products?page=${currentPage}&size=${itemParPage}`)
             .then(res => setProducts(res.data))
-
     }, [currentPage, itemParPage]);
+    
+    // products count
+    useEffect(()=>{
+        axios.get('http://localhost:5000/porductscount')
+        .then(res => setCount(res.data.count))
+    },[])
 
-    useEffect(() => {
-        const storedCart = getShoppingCart();
-        const savedCart = [];
-        // step 1: get id of the addedProduct
-        for (const id in storedCart) {
-            // step 2: get product from products state by using id
-            const addedProduct = products.find(product => product._id === id)
-            if (addedProduct) {
-                // step 3: add quantity
-                const quantity = storedCart[id];
-                addedProduct.quantity = quantity;
-                // step 4: add the added product to the saved cart
-                savedCart.push(addedProduct);
-            }
-            // console.log('added Product', addedProduct)
-        }
-        // step 5: set the cart
-        setCart(savedCart);
-    }, [products])
 
     const handleAddToCart = (product) => {
         // cart.push(product); '
